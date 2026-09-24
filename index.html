@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Tickets - Proyecto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ===== PANTALLA DE LOGIN ===== -->
+    <div id="seccion-login" class="login-wrap">
+        <div class="login-card">
+            <div class="login-logo">
+                <span class="logo-icon">🎫</span>
+                <h1>Sistema de Tickets</h1>
+                <p>Sistema de mesa de servicios - UISIL</p>
+            </div>
+            <form id="form-login">
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="login-correo" required placeholder="ejemplo@mail.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-pas" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Iniciar Sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== APLICACIÓN PRINCIPAL ===== -->
+    <div id="app" class="hidden">
+
+        <!-- Botón de menú para móvil -->
+        <button id="btn-menu-movil" class="mobile-menu-btn" aria-label="Abrir menú">☰</button>
+        <!-- Fondo oscuro al abrir el sidebar en móvil -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <!-- SIDEBAR IZQUIERDO -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon-small">🎫</span>
+                <span class="sidebar-title">Sistema de Tickets</span>
+                <button id="btn-cerrar-sidebar" class="sidebar-close-btn" aria-label="Cerrar menú">✕</button>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-avatar" id="user-avatar">A</div>
+                <div class="user-info">
+                    <span class="user-name" id="nombre-usuario">Usuario</span>
+                    <span class="user-role" id="rol-usuario">Rol</span>
+                </div>
+                <!-- Campana de notificaciones -->
+                <div class="notif-wrapper" id="btn-notificaciones">
+                    <span class="bell-icon">🔔</span>
+                    <span id="notif-badge" class="notif-badge hidden">0</span>
+                </div>
+            </div>
+
+            <!-- Dropdown de notificaciones -->
+            <div id="dropdown-notificaciones" class="notif-dropdown hidden">
+                <div class="notif-header">
+                    <h4>Notificaciones</h4>
+                    <span id="btn-limpiar-notif" class="notif-clear">Limpiar todo</span>
+                </div>
+                <div id="lista-notificaciones" class="notif-list">
+                    <p class="empty-msg">Sin notificaciones nuevas</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-section-label">PRINCIPAL</p>
+                <button class="nav-item active" data-target="vista-tickets">
+                    <span class="nav-icon">🎫</span> Tickets
+                </button>
+                <button class="nav-item" data-target="vista-faq">
+                    <span class="nav-icon">📖</span> Base de Conocimiento
+                </button>
+                <button class="nav-item" data-target="vista-inventario">
+                    <span class="nav-icon">💻</span> Inventario
+                </button>
+
+                <p class="nav-section-label staff-only hidden">GESTIÓN</p>
+                <button class="nav-item staff-only hidden" data-target="vista-reportes">
+                    <span class="nav-icon">📊</span> Reportes
+                </button>
+                <button class="nav-item staff-only hidden" data-target="vista-metricas">
+                    <span class="nav-icon">📈</span> Métricas
+                </button>
+            </nav>
+
+            <button id="btn-logout" class="sidebar-logout">
+                <span>🚪</span> Cerrar Sesión
+            </button>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main id="main-content">
+
+            <!-- ====== VISTA: TICKETS ====== -->
+            <div id="vista-tickets" class="view active-view">
+                <div class="view-header">
+                    <div>
+                        <h2>Panel de Tickets</h2>
+                        <p class="view-subtitle">Gestion de Solicitudes de Servicio</p>
+                    </div>
+                </div>
+
+                <!-- Dashboard de métricas (solo staff) -->
+                <div id="mini-dashboard" class="metrics-row hidden">
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background: rgba(100,116,139,0.2); color:#94a3b8;">📋</div>
+                        <div class="metric-data">
+                            <span class="metric-label">Total</span>
+                            <span class="metric-value" id="m-total">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background: rgba(239,68,68,0.15); color:#ef4444;">🔴</div>
+                        <div class="metric-data">
+                            <span class="metric-label">Abiertos</span>
+                            <span class="metric-value" id="m-abiertos" style="color:#ef4444;">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background: rgba(245,158,11,0.15); color:#f59e0b;">🟡</div>
+                        <div class="metric-data">
+                            <span class="metric-label">En Proceso</span>
+                            <span class="metric-value" id="m-proceso" style="color:#f59e0b;">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background: rgba(16,185,129,0.15); color:#10b981;">✅</div>
+                        <div class="metric-data">
+                            <span class="metric-label">Resueltos</span>
+                            <span class="metric-value" id="m-resueltos" style="color:#10b981;">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tickets-layout">
+                    <!-- Panel izquierdo: lista de tickets -->
+                    <div class="tickets-panel">
+                        <!-- Formulario crear ticket (Solicitante) -->
+                        <div id="area-crear-ticket" class="hidden">
+                            <div class="panel-card" style="margin-bottom:20px;">
+                                <h3 class="panel-card-title">✏️ Crear Nuevo Ticket</h3>
+                                <form id="form-ticket">
+                                    <div class="form-group"><label>Título del Incidente</label><input type="text" id="t-titulo" required placeholder="Describe brevemente el problema"></div>
+                                    <div class="form-group"><label>Descripción</label><textarea id="t-desc" rows="3" required placeholder="Detalla el problema..."></textarea></div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Categoría</label>
+                                            <select id="t-cat"><option>Hardware</option><option>Software</option><option>Red</option><option>Otros</option></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Prioridad</label>
+                                            <select id="t-prio"><option>Baja</option><option>Media</option><option>Alta</option></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Equipo Afectado (Inventario)</label>
+                                        <select id="t-activo"><option value="">Sin equipo vinculado</option></select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-full">🚀 Enviar Ticket</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="panel-card">
+                            <h3 class="panel-card-title">📋 Mis Solicitudes</h3>
+                            <div class="filters-row">
+                                <select id="filtro-estado" class="filter-select">
+                                    <option value="">Todos los Estados</option>
+                                    <option>Abierto</option><option>En Proceso</option><option>Resuelto</option><option>Cerrado</option>
+                                </select>
+                                <select id="filtro-prioridad" class="filter-select">
+                                    <option value="">Todas las Prioridades</option>
+                                    <option>Baja</option><option>Media</option><option>Alta</option>
+                                </select>
+                            </div>
+                            <div id="lista-tickets">
+                                <p class="empty-msg">No hay tickets disponibles.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel derecho: detalle del ticket -->
+                    <div id="detalle-ticket" class="panel-card hidden">
+                        <div class="detail-header">
+                            <div>
+                                <h3 id="det-titulo" style="margin:0; font-size:18px;">Selecciona un ticket</h3>
+                                <p id="det-personas" class="activo-info"></p>
+                                <p id="det-activo-info" class="activo-info"></p>
+                            </div>
+                            <div id="det-sla" class="sla-badge"></div>
+                        </div>
+                        <p id="det-desc" class="det-desc-text"></p>
+
+                        <!-- Gestión (Staff) -->
+                        <div id="gestion-ticket-roles" class="hidden">
+                            <div class="gestion-box">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Estado del Ticket</label>
+                                        <select id="cambiar-estado">
+                                            <option>Abierto</option><option>En Proceso</option><option>Resuelto</option><option>Cerrado</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group id-admin-only">
+                                        <label>Técnico Asignado</label>
+                                        <select id="asignar-tecnico">
+                                            <option value="">Sin asignar</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="btn-row">
+                                    <button id="btn-guardar-cambios-ticket" class="btn btn-primary">💾 Guardar Cambios</button>
+                                    <button id="btn-tomar-ticket" class="btn btn-success"> Tomar este ticket</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Encuesta de satisfacción -->
+                        <div id="seccion-encuesta" class="hidden encuesta-box">
+                            <h4>⭐ ¡Ticket Resuelto! Califica el Servicio</h4>
+                            <div class="estrellas-rating">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                            <input type="hidden" id="calificacion-valor" value="0">
+                            <div class="form-group" style="margin-top:10px;">
+                                <textarea id="comentario-encuesta" placeholder="Déjanos tu comentario sobre el servicio..." rows="2"></textarea>
+                            </div>
+                            <button id="btn-enviar-encuesta" class="btn btn-success btn-full">Enviar Calificación</button>
+                        </div>
+
+                        <!-- Historial de comentarios -->
+                        <div class="comentarios-section">
+                            <h4>💬 Historial de Seguimiento</h4>
+                            <div class="chat-box" id="chat-comentarios"></div>
+                            <form id="form-comentario" class="comentario-form">
+                                <input type="text" id="nuevo-comentario" placeholder="Escribe un comentario..." required>
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== VISTA: FAQ ====== -->
+            <div id="vista-faq" class="view hidden">
+                <div class="view-header">
+                    <div>
+                        <h2>📖 Base de Conocimiento</h2>
+                        <p class="view-subtitle">Preguntas frecuentes y guías de soporte</p>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <input type="text" id="buscador-faq" placeholder="🔍 Buscar por palabra clave, categoría...">
+                </div>
+                <div id="crear-faq-admin" class="panel-card hidden" style="margin-bottom:20px;">
+                    <h3 class="panel-card-title">➕ Agregar Artículo al FAQ</h3>
+                    <form id="form-faq">
+                        <div class="form-group"><label>Pregunta</label><input type="text" id="faq-pregunta" required></div>
+                        <div class="form-group"><label>Respuesta</label><textarea id="faq-respuesta" rows="4" required></textarea></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Categoría</label><input type="text" id="faq-categoria" placeholder="Ej: Hardware, Software, Red" required></div>
+                            <div style="display:flex; align-items:flex-end;">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="lista-faq" class="faq-container"></div>
+            </div>
+
+            <!-- ====== VISTA: INVENTARIO ====== -->
+            <div id="vista-inventario" class="view hidden">
+                <div class="view-header">
+                    <div>
+                        <h2>💻 Inventario de Activos</h2>
+                        <p class="view-subtitle">Equipos, licencias y activos informáticos</p>
+                    </div>
+                </div>
+                <div id="crear-activo-admin" class="panel-card hidden" style="margin-bottom:20px;">
+                    <h3 class="panel-card-title">➕ Registrar Nuevo Activo</h3>
+                    <form id="form-inventario">
+                        <div class="form-row">
+                            <div class="form-group"><label>Nombre del Equipo</label><input type="text" id="inv-nombre" required></div>
+                            <div class="form-group"><label>Tipo</label><select id="inv-tipo"><option>Hardware</option><option>Software</option></select></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Número de Serie / Clave</label><input type="text" id="inv-serie" required></div>
+                            <div class="form-group"><label>ID Usuario Asignado</label><input type="number" id="inv-usuario-id" placeholder="Opcional"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrar Activo</button>
+                    </form>
+                </div>
+                <div class="panel-card">
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th><th>Equipo / Licencia</th><th>Tipo</th><th>N° Serie</th><th>Asignado a</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-inventario-body">
+                                <tr><td colspan="5" class="empty-msg">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== VISTA: REPORTES ====== -->
+            <div id="vista-reportes" class="view hidden">
+                <div class="view-header">
+                    <div>
+                        <h2>📊 Reportes Exportables</h2>
+                        <p class="view-subtitle">Genera y exporta el historial de soporte</p>
+                    </div>
+                </div>
+                <div class="panel-card" style="margin-bottom:20px;">
+                    <h3 class="panel-card-title">🔍 Filtros de Búsqueda</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label>Fecha Inicio</label><input type="date" id="rep-fecha-inicio"></div>
+                        <div class="form-group"><label>Fecha Fin</label><input type="date" id="rep-fecha-fin"></div>
+                        <div class="form-group"><label>Estado</label><select id="rep-estado"><option value="">Todos</option><option>Abierto</option><option>En Proceso</option><option>Resuelto</option><option>Cerrado</option></select></div>
+                        <div class="form-group"><label>Prioridad</label><select id="rep-prioridad"><option value="">Todas</option><option>Baja</option><option>Media</option><option>Alta</option></select></div>
+                    </div>
+                    <div class="btn-row">
+                        <button id="btn-buscar-reporte" class="btn btn-primary">🔍 Generar Reporte</button>
+                        <button id="btn-exportar-excel" class="btn btn-success">⬇️ Exportar CSV/Excel</button>
+                        <button id="btn-exportar-pdf" class="btn btn-info">🖨️ Imprimir / PDF</button>
+                    </div>
+                </div>
+                <div id="reporte-chart-card" class="panel-card hidden" style="margin-bottom:20px;">
+                    <h3 class="panel-card-title">📊 Resumen del Reporte Generado</h3>
+                    <div class="chart-wrap chart-wrap-bar"><canvas id="chart-reporte"></canvas></div>
+                </div>
+                <div class="panel-card">
+                    <div style="overflow-x:auto;">
+                        <table class="data-table" id="tabla-reporte">
+                            <thead>
+                                <tr>
+                                    <th>ID</th><th>Título</th><th>Categoría</th><th>Prioridad</th><th>Estado</th><th>Solicitante</th><th>Técnico</th><th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-reporte-body">
+                                <tr><td colspan="8" class="empty-msg">Genera un reporte para ver resultados.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== VISTA: MÉTRICAS ====== -->
+            <div id="vista-metricas" class="view hidden">
+                <div class="view-header">
+                    <div>
+                        <h2>📈 Dashboard de Métricas</h2>
+                        <p class="view-subtitle">Indicadores clave de soporte técnico</p>
+                    </div>
+                </div>
+                <div class="metrics-row" style="margin-bottom:25px;">
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background:rgba(100,116,139,.2);color:#94a3b8;">📋</div>
+                        <div class="metric-data"><span class="metric-label">Total</span><span class="metric-value" id="mt-total">0</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background:rgba(239,68,68,.15);color:#ef4444;">🔴</div>
+                        <div class="metric-data"><span class="metric-label">Abiertos</span><span class="metric-value" id="mt-abiertos" style="color:#ef4444;">0</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background:rgba(245,158,11,.15);color:#f59e0b;">🟡</div>
+                        <div class="metric-data"><span class="metric-label">En Proceso</span><span class="metric-value" id="mt-proceso" style="color:#f59e0b;">0</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background:rgba(16,185,129,.15);color:#10b981;">✅</div>
+                        <div class="metric-data"><span class="metric-label">Resueltos</span><span class="metric-value" id="mt-resueltos" style="color:#10b981;">0</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="background:rgba(59,130,246,.15);color:#3b82f6;">⭐</div>
+                        <div class="metric-data"><span class="metric-label">Satisfacción</span><span class="metric-value" id="m-satisfaccion" style="color:#3b82f6;">0.0</span></div>
+                    </div>
+                </div>
+                <div class="form-row charts-row" style="margin-bottom:25px; align-items:stretch;">
+                    <div class="panel-card" style="flex:1;">
+                        <h3 class="panel-card-title">📊 Tickets por Estado</h3>
+                        <div class="chart-wrap chart-wrap-donut"><canvas id="chart-estado"></canvas></div>
+                    </div>
+                    <div class="panel-card" style="flex:1;">
+                        <h3 class="panel-card-title">📂 Tickets por Categoría</h3>
+                        <div class="chart-wrap chart-wrap-donut"><canvas id="chart-categoria"></canvas></div>
+                    </div>
+                </div>
+                <div class="panel-card" style="margin-bottom:25px;">
+                    <h3 class="panel-card-title">🛠️ Carga de Trabajo por Técnico</h3>
+                    <div class="chart-wrap chart-wrap-bar-h"><canvas id="chart-tecnico"></canvas></div>
+                </div>
+                <div class="panel-card">
+                    <h3 class="panel-card-title">💬 Encuestas de Satisfacción Recibidas</h3>
+                    <div id="lista-encuestas" class="encuestas-list">
+                        <p class="empty-msg">No hay encuestas registradas aún.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Fondo animado -->
+    <div id="vanta-bg"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
